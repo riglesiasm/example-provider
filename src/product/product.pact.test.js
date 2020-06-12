@@ -31,7 +31,10 @@ describe("Pact Verification", () => {
     const fetchPactsDynamicallyOpts = {
       provider: "pactflow-example-provider",
       //consumerVersionTag: ['master', 'prod'], //the old way of specifying which pacts to verify
-      consumerVersionSelectors: [{ tag: 'master', latest: true }, { tag: 'prod', latest: true } ], // the new way of specifying which pacts to verify
+      consumerVersionSelectors: [
+        { tag: process.env.TRAVIS_BRANCH, fallbackTag: 'master', latest: true },
+        { tag: 'prod', latest: true }
+    ], // the new way of specifying which pacts to verify
       pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,
       enablePending: true,
       includeWipPactsSince: undefined
@@ -40,7 +43,7 @@ describe("Pact Verification", () => {
     const stateHandlers = {
       "a product with ID 10 exists": () => {
         controller.repository.products = new Map([
-          ["10", new Product("10", "CREDIT_CARD", "28 Degrees", "v1")]
+          ["10", new Product("10", "CREDIT_CARD", "28 Degrees", "v1", "green")]
         ]);
       },
       "a product with ID 11 does not exist": () => {
